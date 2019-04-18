@@ -96,7 +96,20 @@ pub struct FaerieBackend {
     libcall_names: Box<Fn(ir::LibCall) -> String>,
 }
 
-pub struct FaerieCompiledFunction {}
+pub struct FaerieCompiledFunction {
+    name: String,
+    code: Vec<u8>,
+}
+
+impl FaerieCompiledFunction {
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn code(&self) -> &[u8] {
+        &self.code
+    }
+}
 
 pub struct FaerieCompiledData {}
 
@@ -188,9 +201,12 @@ impl Backend for FaerieBackend {
         }
 
         self.artifact
-            .define(name, code)
+            .define(name, code.clone())
             .expect("inconsistent declaration");
-        Ok(FaerieCompiledFunction {})
+        Ok(FaerieCompiledFunction {
+            name: name.to_string(),
+            code,
+        })
     }
 
     fn define_data(
